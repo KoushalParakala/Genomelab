@@ -15,7 +15,7 @@ dist-ssr
 # Environment variables — never commit secrets
 .env
 .env.local
-.env.production
+# .env.production is intentionally committed — it only contains public VITE_ vars baked at build time
 
 # Editor directories and files
 .vscode/*
