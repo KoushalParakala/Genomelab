@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import type { DNABasePair, BaseType } from '../types/dna';
 import type { AIPredictions, MutationResponse } from '../services/apiClient';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1';
+
 // ─── Enhanced Interfaces ────────────────────────────────────────────
 
 interface TranslationResult {
@@ -158,7 +160,7 @@ export const useDNAStore = create<DNAStore>((set, get) => ({
         }
 
         try {
-            const res = await fetch('http://localhost:8000/api/v1/biology/mutate', {
+            const res = await fetch(`${API_BASE}/biology/mutate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -208,7 +210,7 @@ export const useDNAStore = create<DNAStore>((set, get) => ({
         set({ isWhatIfScanning: true, whatIfResults: [] });
         
         try {
-            const res = await fetch('http://localhost:8000/api/v1/whatif/scan', {
+            const res = await fetch(`${API_BASE}/whatif/scan`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -242,12 +244,12 @@ export const useDNAStore = create<DNAStore>((set, get) => ({
         
         try {
             const [wtRes, mutRes] = await Promise.all([
-                fetch('http://localhost:8000/api/v1/structure/predict', {
+                fetch(`${API_BASE}/structure/predict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ protein_sequence: state.impactData.baseline_translation.amino_acid_sequence })
                 }),
-                fetch('http://localhost:8000/api/v1/structure/predict', {
+                fetch(`${API_BASE}/structure/predict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ protein_sequence: state.impactData.mutated_translation.amino_acid_sequence })
@@ -278,7 +280,7 @@ export const useDNAStore = create<DNAStore>((set, get) => ({
     fetchHistory: async () => {
         set({ isLoadingHistory: true });
         try {
-            const res = await fetch('http://localhost:8000/api/v1/biology/history');
+            const res = await fetch(`${API_BASE}/biology/history`);
             if (res.ok) {
                 const data = await res.json();
                 set({ history: data.logs, isLoadingHistory: false });
@@ -293,7 +295,7 @@ export const useDNAStore = create<DNAStore>((set, get) => ({
     loadLog: async (logId: string) => {
         set({ isSimulating: true });
         try {
-            const res = await fetch(`http://localhost:8000/api/v1/biology/log/${logId}`);
+            const res = await fetch(`${API_BASE}/biology/log/${logId}`);
             if (res.ok) {
                 const data = await res.json();
                 set({ 
